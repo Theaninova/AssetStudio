@@ -580,7 +580,10 @@ namespace AssetStudio
                     m_Skin[s] = new BoneWeights4(reader);
                 }
 
-                m_BindPose = reader.ReadMatrixArray();
+                if (version[0] > 2 || (version[0] == 2 && version[1] > 5))
+                {
+                    m_BindPose = reader.ReadMatrixArray();
+                }
 
                 m_UV0 = reader.ReadSingleArray(reader.ReadInt32() * 2); //Vector2
 
@@ -633,7 +636,10 @@ namespace AssetStudio
                 m_CompressedMesh = new CompressedMesh(reader);
             }
 
-            reader.Position += 24; //AABB m_LocalAABB
+            if (version[0] > 2 || (version[0] == 1 && version[1] > 5))
+            {
+                reader.Position += 24; //AABB m_LocalAABB
+            }
 
             if (version[0] < 3 || (version[0] == 3 && version[1] <= 4)) //3.4.2 and earlier
             {
@@ -644,9 +650,12 @@ namespace AssetStudio
                     m_Colors[v] = (float)reader.ReadByte() / 0xFF;
                 }
 
-                int m_CollisionTriangles_size = reader.ReadInt32();
-                reader.Position += m_CollisionTriangles_size * 4; //UInt32 indices
-                int m_CollisionVertexCount = reader.ReadInt32();
+                if (version[0] > 2 || (version[0] == 2 && version[0] > 5))
+                {
+                    int m_CollisionTriangles_size = reader.ReadInt32();
+                    reader.Position += m_CollisionTriangles_size * 4; //UInt32 indices
+                    int m_CollisionVertexCount = reader.ReadInt32();
+                }
             }
 
             int m_MeshUsageFlags = reader.ReadInt32();
